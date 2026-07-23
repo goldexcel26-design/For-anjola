@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For Anjola</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#fdf3ec;
+    --cream-dim:#f6e6d8;
+    --ink:#3a2b28;
+    --ink-soft:#8a746c;
+    --rose:#e8998a;
+    --rose-soft:#f0b5ab;
+    --gold:#d9a35c;
+    --line:rgba(58,43,40,0.12);
+    --ease:cubic-bezier(.22,.61,.36,1);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--cream);color:var(--ink);
+    font-family:'Nunito',sans-serif;-webkit-font-smoothing:antialiased;
+    overflow-x:hidden;min-height:100vh;
+  }
+  ::selection{background:var(--rose);color:var(--cream);}
+
+  /* ambient candlelight particles */
+  .ambient{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+  .mote{
+    position:absolute;border-radius:50%;
+    background:radial-gradient(circle, rgba(217,163,92,0.5), transparent 70%);
+    animation:drift 14s ease-in-out infinite;
+  }
+  @keyframes drift{
+    0%,100%{transform:translateY(0) translateX(0);opacity:0.4;}
+    50%{transform:translateY(-40px) translateX(14px);opacity:0.75;}
+  }
+
+  /* -------- envelope screen -------- */
+  .envelope-screen{
+    position:relative;z-index:2;min-height:100vh;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;padding:40px 20px;text-align:center;
+    transition:opacity .8s var(--ease), transform .8s var(--ease);
+  }
+  .envelope-screen.hidden{opacity:0;transform:scale(0.96);pointer-events:none;position:fixed;}
+  .for-label{font-family:'Caveat',cursive;font-size:22px;color:var(--ink-soft);margin-bottom:6px;}
+  .envelope-name{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:600;font-size:clamp(38px,7vw,58px);margin-bottom:44px;color:var(--ink);}
+
+  .envelope{
+    position:relative;width:min(280px,80vw);aspect-ratio:3/2;cursor:pointer;
+    filter:drop-shadow(0 20px 40px rgba(58,43,40,0.18));
+  }
+  .env-body{
+    position:absolute;inset:0;background:linear-gradient(160deg,#fffaf5,var(--cream-dim));
+    border:1px solid var(--line);border-radius:6px;
+  }
+  .env-flap{
+    position:absolute;top:0;left:0;right:0;height:52%;
+    background:linear-gradient(160deg,#fdf3ec,#f0ddc9);
+    clip-path:polygon(0 0, 100% 0, 50% 100%);
+    transform-origin:top center;transition:transform .6s var(--ease);
+    border-bottom:1px solid var(--line);
+  }
+  .envelope.open .env-flap{transform:rotateX(180deg);}
+  .seal{
+    position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    width:52px;height:52px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, var(--rose-soft), var(--rose) 70%);
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 4px 10px rgba(232,153,138,0.4);
+    z-index:3;transition:transform .3s var(--ease), opacity .3s var(--ease);
+  }
+  .envelope.open .seal{opacity:0;transform:translate(-50%,-50%) scale(0.6);}
+  .seal svg{width:20px;height:20px;color:#fff;}
+  .tap-hint{margin-top:28px;font-size:13px;color:var(--ink-soft);letter-spacing:0.02em;}
+  .tap-hint span{display:inline-block;animation:pulse 1.8s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{opacity:0.5;}50%{opacity:1;}}
+
+  /* -------- letter screen -------- */
+  .letter-screen{
+    position:relative;z-index:2;min-height:100vh;display:flex;justify-content:center;
+    padding:100px 20px 120px;opacity:0;transition:opacity 1s var(--ease);
+  }
+  .letter-screen.visible{opacity:1;}
+  .letter{max-width:560px;width:100%;}
+  .letter-greeting{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:600;font-size:clamp(30px,5vw,42px);margin-bottom:36px;color:var(--ink);}
+
+  .letter-block{
+    opacity:0;transform:translateY(16px);
+    transition:opacity .8s var(--ease), transform .8s var(--ease);
+    margin-bottom:26px;
+  }
+  .letter-block.in{opacity:1;transform:translateY(0);}
+  .letter-block p{font-size:17px;line-height:1.8;color:var(--ink);}
+  .letter-block p.soft{color:var(--ink-soft);}
+  .letter-block .accent{font-family:'Caveat',cursive;font-size:23px;color:var(--rose);font-weight:600;}
+
+  .divider{
+    width:44px;height:1px;background:var(--gold);margin:38px 0;
+    opacity:0;transition:opacity 1s var(--ease), width 1s var(--ease);
+  }
+  .divider.in{opacity:1;width:44px;}
+
+  .sign-off{margin-top:10px;}
+  .sign-off .from{font-family:'Caveat',cursive;font-size:30px;color:var(--ink);margin-top:8px;}
+
+  .no-pressure{
+    margin-top:56px;padding:22px 24px;background:var(--cream-dim);
+    border-radius:12px;border:1px solid var(--line);
+  }
+  .no-pressure p{font-size:14px;color:var(--ink-soft);line-height:1.6;}
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation:none !important;transition:none !important;}
+    .letter-block{opacity:1;transform:none;}
+    .divider{opacity:1;}
+  }
+</style>
+</head>
+<body>
+
+<div class="ambient" id="ambient"></div>
+
+<div class="envelope-screen" id="envelopeScreen">
+  <div class="for-label">a small note for</div>
+  <div class="envelope-name">Anjola</div>
+  <div class="envelope" id="envelope">
+    <div class="env-body"></div>
+    <div class="env-flap"></div>
+    <div class="seal">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+    </div>
+  </div>
+  <div class="tap-hint"><span>tap the envelope to open it</span></div>
+</div>
+
+<div class="letter-screen" id="letterScreen">
+  <div class="letter">
+    <div class="letter-greeting">Hey Anjola,</div>
+
+    <div class="letter-block" data-delay="0">
+      <p>I've been giving you cold replies lately, and I haven't been showing up the way you deserve. I noticed it too — I just didn't do anything about it fast enough.</p>
+    </div>
+
+    <div class="letter-block" data-delay="1">
+      <p>That's on me, not you. You didn't do anything to deserve the distance, and I don't want you sitting there wondering if you did.</p>
+    </div>
+
+    <div class="letter-block" data-delay="2">
+      <p class="soft">I'm not always great at saying things the right way in the moment — sometimes I go quiet instead of just being honest, which probably makes it worse, not better.</p>
+    </div>
+
+    <div class="divider" data-delay="3"></div>
+
+    <div class="letter-block" data-delay="4">
+      <p>So this is me actually saying it, instead of another short reply: <span class="accent">I'm sorry.</span> I want to do better than cold texts and distance — you deserve someone who actually shows up.</p>
+    </div>
+
+    <div class="letter-block sign-off" data-delay="5">
+      <p>No pressure to reply right away — I just needed you to hear this properly, not lost in a one-word text.</p>
+      <div class="from">— Eniola</div>
+    </div>
+
+    <div class="letter-block no-pressure" data-delay="6">
+      <p>Take whatever time you need with this. I just wanted you to actually know.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ambient particles
+  const ambient = document.getElementById('ambient');
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(!reduceMotion){
+    for(let i=0;i<14;i++){
+      const mote = document.createElement('div');
+      mote.className = 'mote';
+      const size = 4 + Math.random()*8;
+      mote.style.width = size+'px';
+      mote.style.height = size+'px';
+      mote.style.left = Math.random()*100+'%';
+      mote.style.top = Math.random()*100+'%';
+      mote.style.animationDelay = (Math.random()*10)+'s';
+      mote.style.animationDuration = (10+Math.random()*10)+'s';
+      ambient.appendChild(mote);
+    }
+  }
+
+  // envelope open interaction
+  const envelope = document.getElementById('envelope');
+  const envelopeScreen = document.getElementById('envelopeScreen');
+  const letterScreen = document.getElementById('letterScreen');
+
+  envelope.addEventListener('click', ()=>{
+    envelope.classList.add('open');
+    setTimeout(()=>{
+      envelopeScreen.classList.add('hidden');
+      letterScreen.classList.add('visible');
+      revealBlocks();
+      window.scrollTo({top:0, behavior:'instant'});
+    }, 650);
+  });
+
+  function revealBlocks(){
+    const blocks = document.querySelectorAll('.letter-block, .divider');
+    blocks.forEach(block=>{
+      const delay = parseFloat(block.dataset.delay || 0) * 450;
+      setTimeout(()=> block.classList.add('in'), 300 + delay);
+    });
+  }
+</script>
+</body>
+</html>
